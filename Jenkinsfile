@@ -8,6 +8,7 @@ pipeline {
         DOCKERHUB_CREDENTIALS = credentials('docker_token')
         DOCKER_IMAGE = "gangarampadolkar93/my_app_3.0"
         DOCKER_TAG   = "latest"
+        SONAR_SCANNER_HOME = tool 'sonar-scanner'
      }
     stages {
         stage('Hello') {
@@ -29,6 +30,13 @@ pipeline {
             steps {
                 archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
             }
+        }
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv(credentialsId: 'sonar-token', installationName: 'sonar-scanner') {
+                sh "mvn clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=my-project -Dsonar.projectName='my-project'"
+                 }
+            }     
         }
         stage('Docker Login') {
             steps {
