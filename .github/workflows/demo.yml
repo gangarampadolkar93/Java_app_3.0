@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+env:
+  DOCKER_IMAGE: gangarampadolkar93/my_app_3.0
+  DOCKER_TAG: latest
 
 jobs:
   deploy:
@@ -16,10 +19,12 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: print  message
-        run: echo "hello world!"
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
         with:
-          node-version: 20
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+          
+      - name: Build with Maven
+        run: mvn clean package
